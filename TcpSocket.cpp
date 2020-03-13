@@ -23,8 +23,6 @@ void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 
 void TcpSocket::sendPacket(const Packet&packet){
 
-	//we send packet size first and then packet raw data
-	//TODO size_t is implementation defined and should be changed!!!!!!
 	std::uint32_t size=packet.getNumBytes();
 	std::uint32_t total_size=size+sizeof(size);
 	
@@ -46,9 +44,7 @@ void TcpSocket::sendPacket(const Packet&packet){
 			return;
 		}
 
-		std::cout<<"sent chunk of "<<chunk_size<<" bytes \n";
 		total_sent+=chunk_size;
-		std::cout<<"total sent is "<<total_sent<<"out of"<<total_size<<'\n';
 	}
 
 
@@ -57,25 +53,32 @@ void TcpSocket::sendPacket(const Packet&packet){
 Packet TcpSocket::receivePacket(){
 
 	std::uint32_t packet_size;//this is the pending packet size
-	std::uint32_t size=recv(socketId,&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
+	int size=recv(socketId,&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
+
+	Packet to_return;
 
 
-	std::cout<<"Need to receive a packet of size"<<packet_size<<'\n';
+	if(size<0){
+		std::cout<<"could not receive packet \n";
+		return to_return;//returns empty packet
+	}
+
 
 	std::vector<char> buffer;
 	buffer.resize(packet_size);
 
-	std::uint32_t total_received=0;
+	int total_received=0;
 	
 	while(total_received<packet_size){
-		std::uint32_t received=recv(socketId,&buffer[total_received],packet_size-total_received,0);
+		int received=recv(socketId,&buffer[total_received],packet_size-total_received,0);
+
+		if(received<0){
+			std::cout<<"could not receive packet \n";
+			return to_return;	//returns empty packet
+		}
 		total_received+=received;
-		std::cout<<"received new chunk of "<<received<<" bytes "<<"total received:"<<total_received<<'\n';
 	}
 
-
-
-	Packet to_return;
 	to_return.buffer=buffer;
 
 	return to_return;

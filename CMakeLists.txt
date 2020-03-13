@@ -7,3 +7,6 @@ project(TcpLib)
 
 # add the executable
 add_executable(TcpLib  main.cpp Packet.cpp TcpListener.cpp TcpSocket.cpp SocketUtils.cpp)
+
+target_compile_options(TcpLib PRIVATE -fexceptions -g)
+

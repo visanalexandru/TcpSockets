@@ -19,13 +19,17 @@ int main(int argc,char*argv[]){
 
 
 
+
 	if(argc==2){
 
 		TcpSocket socket;
 		socket.connectToAdress("192.168.0.189",8080);
-		std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-		packet<<content;
-		socket.sendPacket(packet);
+		Packet received=socket.receivePacket();
+		string message;
+		int ans;
+		received>>message>>ans;
+		cout<<message<<" "<<ans;
+
 	}
 	else{
 
@@ -33,13 +37,11 @@ int main(int argc,char*argv[]){
 		TcpListener listener;
 		listener.setPort(8080);
 		TcpSocket client=listener.acceptNewClient();
-		Packet received=client.receivePacket();
-
-		string message;
-		received>>message;
-
-		cout<<message;
-
+		int a;
+		cin>>a;
+		//std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+		packet<<"hello world!!!!The answer to life is"<<42;
+		client.sendPacket(packet);	
 
 	}
 
