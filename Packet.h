@@ -9,45 +9,44 @@
 class Packet{
 	private:
 		std::vector<char> buffer;
-		int readPosition;
+		std::uint32_t readPosition;
 		void append(const void*data,unsigned sizeInBytes);
 	public:
 		Packet();
-		Packet&operator <<(char toAdd);
-		Packet&operator >>(char&destination);
+		Packet&operator <<(std::int8_t toAdd);
+		Packet&operator >>(std::int8_t&destination);
+
+		Packet&operator <<(std::uint8_t toAdd);
+		Packet&operator >>(std::uint8_t&destination);
+
+		Packet&operator <<(std::int16_t toAdd);
+		Packet&operator >>(std::int16_t&destination);
+
+		Packet&operator <<(std::uint16_t toAdd);
+		Packet&operator >>(std::uint16_t&destination);
 
 
-		Packet&operator <<(short toAdd);
-		Packet&operator >>(short&destination);
-
-		Packet&operator <<(unsigned short toAdd);
-		Packet&operator >>(unsigned short&destination);
-
-
-		Packet&operator <<(int toAdd);
-		Packet&operator >>(int&destination);
+		Packet&operator <<(std::int32_t toAdd);
+		Packet&operator >>(std::int32_t&destination);
 
 	
-		Packet&operator <<(unsigned toAdd);
-		Packet&operator >>(unsigned &destination);
+		Packet&operator <<(std::uint32_t toAdd);
+		Packet&operator >>(std::uint32_t &destination);
 
-		Packet&operator <<(long toAdd);
-		Packet&operator >>(long &destination);	
+		Packet&operator <<(std::int64_t  toAdd);
+		Packet&operator >>(std::int64_t  &destination);	
 
-		Packet&operator <<(unsigned long toAdd);
-		Packet&operator >>(unsigned long &destination);	
+		Packet&operator <<(std::uint64_t toAdd);
+		Packet&operator >>(std::uint64_t &destination);	
 
 		Packet&operator <<(long long  toAdd);
 		Packet&operator >>(long long &destination);	
-
-		Packet&operator <<(unsigned long long  toAdd);
-		Packet&operator >>(unsigned long long &destination);	
 
 		Packet&operator <<(const std::string &toAdd);
 		Packet&operator >>(std::string &destination);
 
 		const void* getData() const;
-		size_t getNumBytes() const;
+		std::uint32_t getNumBytes() const;
 
 		friend class TcpSocket;
 		

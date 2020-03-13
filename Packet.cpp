@@ -5,7 +5,7 @@ Packet::Packet():readPosition(0){
 
 }
 
-void Packet::append(const void*data,unsigned sizeInBytes){
+void Packet::append(const void*data,std::uint32_t sizeInBytes){
 	int starting=buffer.size();
 	buffer.resize(starting+sizeInBytes);
 	memcpy(&buffer[starting],data,sizeInBytes);
@@ -14,13 +14,50 @@ void Packet::append(const void*data,unsigned sizeInBytes){
 
 
 
-Packet& Packet::operator <<(char toAdd){
+Packet& Packet::operator <<(std::int8_t toAdd){
+
 	append(&toAdd,sizeof(toAdd));
 	return *this;
 }
 
 
-Packet& Packet::operator >>(char &destination){
+Packet& Packet::operator >>(std::int8_t &destination){
+	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	readPosition+=sizeof(destination);
+	return *this;
+}
+
+Packet& Packet::operator <<(std::uint8_t toAdd){
+	append(&toAdd,sizeof(toAdd));
+	return *this;
+}
+
+
+Packet& Packet::operator >>(std::uint8_t &destination){
+	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	readPosition+=sizeof(destination);
+	return *this;
+}
+
+Packet& Packet::operator <<(std::int16_t toAdd){
+	append(&toAdd,sizeof(toAdd));
+	return *this;
+}
+
+
+Packet& Packet::operator >>(std::int16_t &destination){
+	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	readPosition+=sizeof(destination);
+	return *this;
+}
+
+Packet& Packet::operator <<(std::uint16_t toAdd){
+	append(&toAdd,sizeof(toAdd));
+	return *this;
+}
+
+
+Packet& Packet::operator >>(std::uint16_t &destination){
 	memcpy(&destination,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
 	return *this;
@@ -28,142 +65,74 @@ Packet& Packet::operator >>(char &destination){
 
 
 
-
-Packet& Packet::operator <<(short toAdd){
+Packet& Packet::operator <<(std::int32_t toAdd){
 	append(&toAdd,sizeof(toAdd));
 	return *this;
 }
 
 
-Packet& Packet::operator >>(short&destination){
+Packet& Packet::operator >>(std::int32_t &destination){
+	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	readPosition+=sizeof(destination);
+	return *this;
+}
+
+Packet& Packet::operator <<(std::uint32_t toAdd){
+	append(&toAdd,sizeof(toAdd));
+	return *this;
+}
+
+
+Packet& Packet::operator >>(std::uint32_t &destination){
 	memcpy(&destination,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
 	return *this;
 }
 
 
-
-
-
-
-Packet& Packet::operator <<(unsigned short toAdd){
+Packet& Packet::operator <<(std::int64_t toAdd){
 	append(&toAdd,sizeof(toAdd));
 	return *this;
 }
 
 
-Packet& Packet::operator >>(unsigned short&destination){
+Packet& Packet::operator >>(std::int64_t &destination){
 	memcpy(&destination,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
 	return *this;
 }
 
-
-
-
-
-
-
-Packet& Packet::operator <<(int toAdd){
+Packet& Packet::operator <<(std::uint64_t toAdd){
 	append(&toAdd,sizeof(toAdd));
 	return *this;
 }
 
 
-Packet& Packet::operator >>(int&destination){
+Packet& Packet::operator >>(std::uint64_t &destination){
 	memcpy(&destination,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
 	return *this;
 }
-
-
-
-Packet& Packet::operator <<(unsigned toAdd){
-	append(&toAdd,sizeof(toAdd));
-	return *this;
-}
-
-
-Packet& Packet::operator >>(unsigned&destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
-	readPosition+=sizeof(destination);
-	return *this;
-}
-
-
-Packet& Packet::operator <<(long toAdd){
-	append(&toAdd,sizeof(toAdd));
-	return *this;
-}
-
-
-Packet& Packet::operator >>(long &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
-	readPosition+=sizeof(destination);
-	return *this;
-}
-
-
-Packet& Packet::operator <<(unsigned long toAdd){
-	append(&toAdd,sizeof(toAdd));
-	return *this;
-}
-
-
-Packet& Packet::operator >>(unsigned long &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
-	readPosition+=sizeof(destination);
-	return *this;
-}
-
-
-
-
-Packet& Packet::operator <<(long long toAdd){
-	append(&toAdd,sizeof(toAdd));
-	return *this;
-}
-
-
-Packet& Packet::operator >>(long long &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
-	readPosition+=sizeof(destination);
-	return *this;
-}
-
-
-
-Packet& Packet::operator <<(unsigned long long toAdd){
-	append(&toAdd,sizeof(toAdd));
-	return *this;
-}
-
-
-Packet& Packet::operator >>(unsigned long long &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
-	readPosition+=sizeof(destination);
-	return *this;
-}
-
 
 
 
 
 Packet& Packet::operator <<(const std::string&toAdd){
-	*this<<toAdd.length();
 
+	std::uint32_t string_size=toAdd.length();
+	*this<<string_size;
 
 	for(int i=0;i<toAdd.length();i++){
-		*this<<toAdd[i];
+		std::int8_t character=toAdd[i];
+		*this<<character;
 	}
-
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::string&destination){
 	
-	size_t length;
+	std::uint32_t length;
 
 	*this>>length;
 
@@ -179,7 +148,7 @@ const void* Packet::getData() const {
 }
 
 
-size_t Packet::getNumBytes() const{
+std::uint32_t Packet::getNumBytes() const{
 	return buffer.size();
 }
 
