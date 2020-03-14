@@ -3,7 +3,7 @@
 
 void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 
-	socketId=SocketUtils::createNewSocket();
+	createNewSocket();
 	struct sockaddr_in serv_addr;
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(port);
@@ -14,7 +14,7 @@ void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 		std::cout<<"invalid adress"<<'\n';
 	}
 
-	if (connect(socketId, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+	if (connect(getHandle(), (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 	{
 		std::cout<<"connection to "<<address<<":"<<port<<" failed\n";
 	}
@@ -37,7 +37,7 @@ void TcpSocket::sendPacket(const Packet&packet){
 
 	std::uint32_t total_sent=0;
 	while(total_sent<total_size){
-		std::uint32_t chunk_size=send(socketId,&data[total_sent],total_size-total_sent,0);
+		std::uint32_t chunk_size=send(getHandle(),&data[total_sent],total_size-total_sent,0);
 
 		if(chunk_size<0){
 			std::cout<<"could not send packet \n";
@@ -53,7 +53,7 @@ void TcpSocket::sendPacket(const Packet&packet){
 Packet TcpSocket::receivePacket(){
 
 	std::uint32_t packet_size;//this is the pending packet size
-	int size=recv(socketId,&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
+	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
 
 	Packet to_return;
 
@@ -70,7 +70,7 @@ Packet TcpSocket::receivePacket(){
 	int total_received=0;
 	
 	while(total_received<packet_size){
-		int received=recv(socketId,&buffer[total_received],packet_size-total_received,0);
+		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
 
 		if(received<0){
 			std::cout<<"could not receive packet \n";

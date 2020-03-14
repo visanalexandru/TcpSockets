@@ -1,12 +1,11 @@
 #ifndef TCPSOCKET_H
 #define TCPSOCKET_H
 
-#include"SocketUtils.h"
+#include "Socket.h"
 #include"Packet.h"
-class TcpSocket{
+class TcpSocket:public Socket{
 
-	private:
-		int socketId;
+	
 	public:
 		void connectToAdress(const std::string&adress,unsigned port);
 		void sendPacket(const Packet&packet);

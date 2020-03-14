@@ -1,15 +1,13 @@
 #ifndef TCPLISTENER_H
 #define TCPLISTENER_H
 
-
-#include"SocketUtils.h"
+#include "Socket.h"
 #include "TcpSocket.h"
 
-class TcpListener{
+class TcpListener:public Socket{
 
 
 	private:
-		int socketId;
 		void setSocketOptions(unsigned port);
 	public:
 		TcpListener();

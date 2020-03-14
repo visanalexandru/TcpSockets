@@ -1,5 +1,5 @@
-#ifndef SOCKETUTILS_H
-#define SOCKETUTILS_H
+#ifndef SOCKET_H
+#define SOCKET_H
 
 #include <unistd.h> 
 #include <stdio.h> 
@@ -11,10 +11,12 @@
 #include <arpa/inet.h>
 
 
-
-class SocketUtils{
+class Socket{
+	protected:
+		int socketId;
+		void createNewSocket();
 	public:
-		static int createNewSocket();
+		Socket();
+		int getHandle() const;
 };
-
 #endif
