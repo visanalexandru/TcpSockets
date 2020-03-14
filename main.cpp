@@ -24,6 +24,9 @@ int main(int argc,char*argv[]){
 
 		TcpSocket socket;
 		socket.connectToAdress("192.168.0.189",8080);
+
+		std::cout<<"connected to"<<socket.getAdress().address<<std::endl;
+
 		Packet received=socket.receivePacket();
 		string message;
 		int ans;

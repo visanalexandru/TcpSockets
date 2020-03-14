@@ -9,6 +9,10 @@ class TcpSocket:public Socket{
 	public:
 		void connectToAdress(const std::string&adress,unsigned port);
 		void sendPacket(const Packet&packet);
+		Socket::Address getAdress() const;
+	
+
+
 		Packet receivePacket();
 
 		friend class TcpListener;

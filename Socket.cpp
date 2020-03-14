@@ -2,7 +2,7 @@
 
 
 
-Socket::Socket():socketId(0){
+Socket::Socket():socketId(-1){
 
 
 }
@@ -15,11 +15,16 @@ void Socket::createNewSocket(){
 	{
 		std::cout<<"could not create socket"<<'\n';
 	} 
-
-	socketId=newsocket;
+	else{
+		socketId=newsocket;
+	}
 }
 
 
 int Socket::getHandle() const{
 	return socketId;
+}
+
+bool Socket::isValid() const{
+	return socketId!=-1;
 }

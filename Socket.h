@@ -18,5 +18,11 @@ class Socket{
 	public:
 		Socket();
 		int getHandle() const;
+		bool isValid() const;
+
+		struct Address{
+			std::string address;
+			int port;
+		};
 };
 #endif

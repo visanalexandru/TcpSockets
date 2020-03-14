@@ -18,10 +18,16 @@ void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 	{
 		std::cout<<"connection to "<<address<<":"<<port<<" failed\n";
 	}
+
 }
 
 
 void TcpSocket::sendPacket(const Packet&packet){
+
+	if(!isValid()){
+		std::cout<<"could not send packet as the socket is not valid\n";
+		return;
+	}
 
 	std::uint32_t size=packet.getNumBytes();
 	std::uint32_t total_size=size+sizeof(size);
@@ -52,11 +58,14 @@ void TcpSocket::sendPacket(const Packet&packet){
 
 Packet TcpSocket::receivePacket(){
 
-	std::uint32_t packet_size;//this is the pending packet size
-	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
-
 	Packet to_return;
 
+	if(!isValid()){
+		std::cout<<"could not receive packet as the socket is not valid \n";
+		return to_return;//returns empty packet
+	}	
+	std::uint32_t packet_size;//this is the pending packet size
+	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
 
 	if(size<0){
 		std::cout<<"could not receive packet \n";
@@ -71,8 +80,7 @@ Packet TcpSocket::receivePacket(){
 	
 	while(total_received<packet_size){
 		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
-
-		if(received<0){
+		if(received<=0){
 			std::cout<<"could not receive packet \n";
 			return to_return;	//returns empty packet
 		}
@@ -84,3 +92,15 @@ Packet TcpSocket::receivePacket(){
 	return to_return;
 }
 
+
+Socket::Address TcpSocket::getAdress() const {
+
+	int addrlen;
+  	struct sockaddr_in address;   
+	int valid=getpeername(getHandle() , (struct sockaddr*)&address , (socklen_t*)&addrlen);   
+
+	if(valid!=-1){
+		return {inet_ntoa(address.sin_addr) ,ntohs(address.sin_port)};
+	}
+	return {"",0};
+}
