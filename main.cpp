@@ -25,12 +25,10 @@ int main(int argc,char*argv[]){
 	if(argc==2){
 
 		TcpSocket socket;
-		selector.add(socket);
 		socket.connectToAdress("192.168.0.189",8080);
 
 
 		std::cout<<"connected to"<<socket.getAdress().address<<std::endl;
-
 
 		Packet received=socket.receivePacket();
 		string message;
@@ -44,23 +42,18 @@ int main(int argc,char*argv[]){
 
 
 		TcpListener listener;
-		selector.add(listener);
 		listener.setPort(8080);
 
 
 
-		if(selector.wait()){
 
-			if(selector.isReady(listener)){
-				TcpSocket client=listener.acceptNewClient();
-				int a;
-				cin>>a;
-				//std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-				packet<<"hello world!!!!The answer to life is"<<42;
-				client.sendPacket(packet);	
+		TcpSocket client=listener.acceptNewClient();
+		int a;
+		cin>>a;
+		//std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+		packet<<"hello world!!!!The answer to life is"<<42;
+		client.sendPacket(packet);	
 
-			}
-		}
 
 	}
 

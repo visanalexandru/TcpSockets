@@ -1,4 +1,5 @@
 #include "TcpSocket.h"
+#include <errno.h>
 
 
 void TcpSocket::connectToAdress(const std::string&address,unsigned port){
@@ -31,7 +32,7 @@ void TcpSocket::sendPacket(const Packet&packet){
 
 	std::uint32_t size=packet.getNumBytes();
 	std::uint32_t total_size=size+sizeof(size);
-	
+
 
 	//we need to add the size of the packet in the raw data
 	std::vector<char> data;
@@ -72,18 +73,20 @@ Packet TcpSocket::receivePacket(){
 		return to_return;//returns empty packet
 	}
 
+	std::cout<<"need to receive a packet of size: "<<packet_size<<std::endl;
 
 	std::vector<char> buffer;
 	buffer.resize(packet_size);
 
 	int total_received=0;
-	
+
 	while(total_received<packet_size){
 		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
 		if(received<=0){
 			std::cout<<"could not receive packet"<<std::endl;
 			return to_return;	//returns empty packet
 		}
+		std::cout<<"received new chunk of: "<<received<<std::endl;
 		total_received+=received;
 	}
 
@@ -95,12 +98,13 @@ Packet TcpSocket::receivePacket(){
 
 Socket::Address TcpSocket::getAdress() const {
 
-	int addrlen;
-  	struct sockaddr_in address;   
-	int valid=getpeername(getHandle() , (struct sockaddr*)&address , (socklen_t*)&addrlen);   
+	struct sockaddr_in address;   
+	int addrlen=sizeof(address);
+	int valid=getpeername(getHandle() , (struct sockaddr*)&address , (socklen_t*)&addrlen);  
 
 	if(valid!=-1){
 		return {inet_ntoa(address.sin_addr) ,ntohs(address.sin_port)};
 	}
+
 	return {"",0};
 }
