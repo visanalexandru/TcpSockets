@@ -15,10 +15,17 @@ class Socket{
 	protected:
 		int socketId;
 		void createNewSocket();
+		bool isValid() const;
 	public:
+		enum Status{
+			Done,
+			Disconnected,
+			InvalidAddress,
+			Error,
+		};
+
 		Socket();
 		int getHandle() const;
-		bool isValid() const;
 
 		struct Address{
 			std::string address;

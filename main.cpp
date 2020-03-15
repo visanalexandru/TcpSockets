@@ -30,10 +30,10 @@ int main(int argc,char*argv[]){
 
 		std::cout<<"connected to"<<socket.getAdress().address<<std::endl;
 
-		Packet received=socket.receivePacket();
+		socket.receivePacket(packet);
 		string message;
 		int ans;
-		received>>message>>ans;
+		packet>>message>>ans;
 		cout<<message<<" "<<ans;
 
 	}

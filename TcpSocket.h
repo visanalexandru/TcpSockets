@@ -7,13 +7,11 @@ class TcpSocket:public Socket{
 
 	
 	public:
-		void connectToAdress(const std::string&adress,unsigned port);
-		void sendPacket(const Packet&packet);
+		Socket::Status connectToAdress(const std::string&adress,unsigned port);
+		Socket::Status sendPacket(const Packet&packet);
 		Socket::Address getAdress() const;
 	
-
-
-		Packet receivePacket();
+		Socket::Status receivePacket(Packet&packet);
 
 		friend class TcpListener;
 

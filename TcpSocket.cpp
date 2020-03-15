@@ -2,9 +2,12 @@
 #include <errno.h>
 
 
-void TcpSocket::connectToAdress(const std::string&address,unsigned port){
+Socket::Status TcpSocket::connectToAdress(const std::string&address,unsigned port){
 
 	createNewSocket();
+	if(!isValid())
+		return Socket::Status::Disconnected;
+
 	struct sockaddr_in serv_addr;
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(port);
@@ -13,22 +16,22 @@ void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 	if(inet_pton(AF_INET, address.c_str(), &serv_addr.sin_addr)<=0)
 	{
 		std::cout<<"invalid adress"<<std::endl;
+		return Socket::Status::InvalidAddress;
 	}
 
 	if (connect(getHandle(), (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 	{
 		std::cout<<"connection to "<<address<<":"<<port<<" failed"<<std::endl;
+		return Socket::Status::Disconnected;
 	}
 
+	return Socket::Status::Done;
 }
 
 
-void TcpSocket::sendPacket(const Packet&packet){
+Socket::Status TcpSocket::sendPacket(const Packet&packet){
 
-	if(!isValid()){
-		std::cout<<"could not send packet as the socket is not valid"<<std::endl;
-		return;
-	}
+	
 
 	std::uint32_t size=packet.getNumBytes();
 	std::uint32_t total_size=size+sizeof(size);
@@ -48,31 +51,30 @@ void TcpSocket::sendPacket(const Packet&packet){
 
 		if(chunk_size<0){
 			std::cout<<"could not send packet"<<std::endl;
-			return;
+			return Socket::Status::Error;
 		}
 
 		total_sent+=chunk_size;
 	}
+	
 
+
+	return Socket::Status::Done;
 
 }
 
-Packet TcpSocket::receivePacket(){
+Socket::Status TcpSocket::receivePacket(Packet&packet){
 
-	Packet to_return;
 
-	if(!isValid()){
-		std::cout<<"could not receive packet as the socket is not valid"<<std::endl;
-		return to_return;//returns empty packet
-	}	
 	std::uint32_t packet_size;//this is the pending packet size
 	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
-
-	if(size<0){
+	
+	if(size<=0){
 		std::cout<<"could not receive packet"<<std::endl;
-		return to_return;//returns empty packet
+		if(size==0)
+			return Socket::Status::Disconnected;
+		return Socket::Status::Error;
 	}
-
 	std::cout<<"need to receive a packet of size: "<<packet_size<<std::endl;
 
 	std::vector<char> buffer;
@@ -84,15 +86,18 @@ Packet TcpSocket::receivePacket(){
 		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
 		if(received<=0){
 			std::cout<<"could not receive packet"<<std::endl;
-			return to_return;	//returns empty packet
+			
+			if(received==0){
+				return Socket::Status::Disconnected;
+			}
+			return Socket::Status::Error;
 		}
 		std::cout<<"received new chunk of: "<<received<<std::endl;
 		total_received+=received;
 	}
 
-	to_return.buffer=buffer;
-
-	return to_return;
+	packet.buffer=buffer;
+	return Socket::Status::Done;
 }
 
 
