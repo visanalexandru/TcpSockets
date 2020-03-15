@@ -42,12 +42,14 @@ int main(int argc,char*argv[]){
 
 
 		TcpListener listener;
-		listener.setPort(8080);
+		listener.listenToPort(8080);
+
+
+		TcpSocket client;
 
 
 
-
-		TcpSocket client=listener.acceptNewClient();
+		listener.acceptNewClient(&client);
 		int a;
 		cin>>a;
 		//std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());

@@ -11,7 +11,7 @@ class TcpListener:public Socket{
 		void setSocketOptions(unsigned port);
 	public:
 		TcpListener();
-		void setPort(unsigned port);
-		TcpSocket acceptNewClient() const ;
+		Socket::Status listenToPort(unsigned port);
+		Socket::Status acceptNewClient(TcpSocket*newsock) const ;
 };
 #endif
