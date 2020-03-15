@@ -17,7 +17,7 @@ void TcpListener::setPort(unsigned port){
 	if (setsockopt(getHandle(), SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, 
 				&opt, sizeof(opt))) 
 	{ 
-		std::cout<<"cannot set socket options"<<'\n'; 
+		std::cout<<"cannot set socket options"<<std::endl; 
 	} 
 	address.sin_family = AF_INET; 
 	address.sin_addr.s_addr = INADDR_ANY; 
@@ -26,12 +26,12 @@ void TcpListener::setPort(unsigned port){
 	if (bind(getHandle(), (struct sockaddr *)&address,  
 				sizeof(address))<0) 
 	{ 
-		std::cout<<"socket bind to port: "<<port<<" failed"<<'\n';
+		std::cout<<"socket bind to port: "<<port<<" failed"<<std::endl;
 	}
 
 	if (listen(getHandle(), 3) < 0) 
 	{ 
-		std::cout<<"cannot listen on port: "<<port<<'\n'; 
+		std::cout<<"cannot listen on port: "<<port<<std::endl; 
 	} 
 }
 TcpSocket TcpListener::acceptNewClient() const {
@@ -41,10 +41,10 @@ TcpSocket TcpListener::acceptNewClient() const {
 	if ((new_socket = accept(getHandle(), (struct sockaddr *)&address,  
 					(socklen_t*)&addrlen))<0) 
 	{ 
-		std::cout<<"cannot accept new client"<<'\n'; 
+		std::cout<<"cannot accept new client"<<std::endl; 
 	}
 
-	std::cout<<"new client:"<<inet_ntoa(address.sin_addr);
+	std::cout<<"new client:"<<inet_ntoa(address.sin_addr)<<std::endl;
 
 	TcpSocket to_return;
 	to_return.socketId=new_socket;

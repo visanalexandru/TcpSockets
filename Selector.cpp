@@ -5,17 +5,17 @@
 
 void Selector::add(const Socket&sock){
 	FD_SET(sock.getHandle(), &socket_set); 
-	descriptors.insert(sock.getHandle());
+	sockets.insert(&sock);
 }
 
 
 void Selector::remove(const Socket&sock){
 
-	std::set<int>::iterator iter=descriptors.find(sock.getHandle());
+	auto iter=sockets.find(&sock);
 
-	if(iter!=descriptors.end())//socket is in set
+	if(iter!=sockets.end())//socket is in set
 	{
-		descriptors.erase(iter);
+		sockets.erase(iter);
 		FD_CLR(sock.getHandle(), &socket_set);
 	}
 }
@@ -26,8 +26,10 @@ void Selector::clear(){
 
 
 bool Selector::wait(){//TODO add timeout
-	if(descriptors.size()){
-		int max_d=*(descriptors.rbegin());
+	if(sockets.size()){
+		int max_d=(*(sockets.rbegin()))->getHandle();
+
+
 		int activity = select( max_d + 1 , &socket_set , NULL , NULL , NULL);
 		if(activity <= 0){
 			if(activity<0)

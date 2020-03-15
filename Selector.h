@@ -10,9 +10,13 @@ class Selector{
 
 	private:
 		fd_set socket_set;
-		std::set<int> descriptors;
 
-
+		struct comparator{
+			bool operator ()(const Socket*a,const Socket*b){
+				return a->getHandle()<b->getHandle();
+			}
+		};
+		std::set<const Socket*,comparator> sockets;
 	public:
 		void add(const Socket&sock);
 		void remove(const Socket&sock);

@@ -11,12 +11,12 @@ void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 	// Convert IPv4 and IPv6 addresses from text to binary form
 	if(inet_pton(AF_INET, address.c_str(), &serv_addr.sin_addr)<=0)
 	{
-		std::cout<<"invalid adress"<<'\n';
+		std::cout<<"invalid adress"<<std::endl;
 	}
 
 	if (connect(getHandle(), (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 	{
-		std::cout<<"connection to "<<address<<":"<<port<<" failed\n";
+		std::cout<<"connection to "<<address<<":"<<port<<" failed"<<std::endl;
 	}
 
 }
@@ -25,7 +25,7 @@ void TcpSocket::connectToAdress(const std::string&address,unsigned port){
 void TcpSocket::sendPacket(const Packet&packet){
 
 	if(!isValid()){
-		std::cout<<"could not send packet as the socket is not valid\n";
+		std::cout<<"could not send packet as the socket is not valid"<<std::endl;
 		return;
 	}
 
@@ -46,7 +46,7 @@ void TcpSocket::sendPacket(const Packet&packet){
 		std::uint32_t chunk_size=send(getHandle(),&data[total_sent],total_size-total_sent,0);
 
 		if(chunk_size<0){
-			std::cout<<"could not send packet \n";
+			std::cout<<"could not send packet"<<std::endl;
 			return;
 		}
 
@@ -61,14 +61,14 @@ Packet TcpSocket::receivePacket(){
 	Packet to_return;
 
 	if(!isValid()){
-		std::cout<<"could not receive packet as the socket is not valid \n";
+		std::cout<<"could not receive packet as the socket is not valid"<<std::endl;
 		return to_return;//returns empty packet
 	}	
 	std::uint32_t packet_size;//this is the pending packet size
 	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
 
 	if(size<0){
-		std::cout<<"could not receive packet \n";
+		std::cout<<"could not receive packet"<<std::endl;
 		return to_return;//returns empty packet
 	}
 
@@ -81,7 +81,7 @@ Packet TcpSocket::receivePacket(){
 	while(total_received<packet_size){
 		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
 		if(received<=0){
-			std::cout<<"could not receive packet \n";
+			std::cout<<"could not receive packet"<<std::endl;
 			return to_return;	//returns empty packet
 		}
 		total_received+=received;
