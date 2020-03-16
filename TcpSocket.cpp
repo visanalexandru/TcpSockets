@@ -15,13 +15,12 @@ Socket::Status TcpSocket::connectToAdress(const std::string&address,unsigned por
 	// Convert IPv4 and IPv6 addresses from text to binary form
 	if(inet_pton(AF_INET, address.c_str(), &serv_addr.sin_addr)<=0)
 	{
-		std::cout<<"invalid adress"<<std::endl;
 		return Socket::Status::InvalidAddress;
 	}
 
 	if (connect(getHandle(), (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 	{
-		std::cout<<"connection to "<<address<<":"<<port<<" failed"<<std::endl;
+		
 		return Socket::Status::Disconnected;
 	}
 
@@ -50,7 +49,6 @@ Socket::Status TcpSocket::sendPacket(const Packet&packet){
 		std::uint32_t chunk_size=send(getHandle(),&data[total_sent],total_size-total_sent,0);
 
 		if(chunk_size<0){
-			std::cout<<"could not send packet"<<std::endl;
 			return Socket::Status::Error;
 		}
 
@@ -70,12 +68,10 @@ Socket::Status TcpSocket::receivePacket(Packet&packet){
 	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
 	
 	if(size<=0){
-		std::cout<<"could not receive packet"<<std::endl;
 		if(size==0)
 			return Socket::Status::Disconnected;
 		return Socket::Status::Error;
 	}
-	std::cout<<"need to receive a packet of size: "<<packet_size<<std::endl;
 
 	std::vector<char> buffer;
 	buffer.resize(packet_size);
@@ -85,14 +81,12 @@ Socket::Status TcpSocket::receivePacket(Packet&packet){
 	while(total_received<packet_size){
 		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
 		if(received<=0){
-			std::cout<<"could not receive packet"<<std::endl;
 			
 			if(received==0){
 				return Socket::Status::Disconnected;
 			}
 			return Socket::Status::Error;
 		}
-		std::cout<<"received new chunk of: "<<received<<std::endl;
 		total_received+=received;
 	}
 

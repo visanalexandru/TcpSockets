@@ -11,13 +11,10 @@ Socket::Socket():socketId(-1){
 void Socket::createNewSocket(){
 
 	int newsocket;
-	if ((newsocket = socket(AF_INET, SOCK_STREAM, 0)) == 0) 
+	if ((newsocket = socket(AF_INET, SOCK_STREAM, 0)) != 0) 
 	{
-		std::cout<<"could not create socket"<<std::endl;
-	} 
-	else{
 		socketId=newsocket;
-	}
+	} 
 }
 
 
