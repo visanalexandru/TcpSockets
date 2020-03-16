@@ -5,6 +5,8 @@
 #include<cstring>
 #include<string>
 #include<iostream>
+#include <netinet/in.h>
+
 
 class Packet{
 	private:

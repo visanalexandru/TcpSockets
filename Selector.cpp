@@ -50,7 +50,6 @@ bool Selector::wait(){//TODO add timeout
 		int activity = select( max_d + 1 , &socket_set , NULL , NULL , NULL);
 		if(activity <= 0){
 			if(activity<0)
-				std::cout<<"select error"<<std::endl;
 			return false;
 		}
 		return true;

@@ -40,54 +40,74 @@ Packet& Packet::operator >>(std::uint8_t &destination){
 }
 
 Packet& Packet::operator <<(std::int16_t toAdd){
-	append(&toAdd,sizeof(toAdd));
+	std::int16_t network_order=htons(toAdd);
+	append(&network_order,sizeof(network_order));
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::int16_t &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	std::int16_t network_order;
+
+	memcpy(&network_order,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
+
+	destination=ntohs(network_order);
 	return *this;
 }
 
 Packet& Packet::operator <<(std::uint16_t toAdd){
-	append(&toAdd,sizeof(toAdd));
+	std::uint16_t network_order=htons(toAdd);
+	append(&network_order,sizeof(network_order));
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::uint16_t &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	std::uint16_t network_order;
+
+	memcpy(&network_order,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
+
+	destination=ntohs(network_order);
 	return *this;
 }
 
-
-
 Packet& Packet::operator <<(std::int32_t toAdd){
-	append(&toAdd,sizeof(toAdd));
+	std::int32_t network_order=htonl(toAdd);
+	append(&network_order,sizeof(network_order));
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::int32_t &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	std::int32_t network_order;
+
+	memcpy(&network_order,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
+
+	destination=ntohl(network_order);
 	return *this;
 }
 
 Packet& Packet::operator <<(std::uint32_t toAdd){
-	append(&toAdd,sizeof(toAdd));
+	std::uint32_t network_order=htonl(toAdd);
+	append(&network_order,sizeof(network_order));
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::uint32_t &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	std::uint32_t network_order;
+
+	memcpy(&network_order,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
+
+	destination=ntohl(network_order);
 	return *this;
 }
+
+
 
 
 Packet& Packet::operator <<(std::int64_t toAdd){

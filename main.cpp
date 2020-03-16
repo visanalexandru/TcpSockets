@@ -10,7 +10,7 @@
 using namespace std;
 
 
-ifstream in("input");
+
 
 
 
@@ -42,7 +42,7 @@ void server(){
 						Packet received;
 						Socket::Status status=a->receivePacket(received);
 						if(status==Socket::Status::Done){
-							string message;
+							string message;	
 							received>>message;
 							std::cout<<a->getAdress().address<<":"<<message<<std::endl;
 						}
@@ -61,7 +61,7 @@ void server(){
 }
 
 void client(){
-	string to_send;
+	std::string to_send;
 	TcpSocket socket;
 	Socket::Status status=socket.connectToAdress("192.168.0.189",8080);
 
@@ -74,7 +74,9 @@ void client(){
 	std::cout<<"started client to"<<socket.getAdress().address<<" "<<socket.getAdress().port<<std::endl;
 
 	while(1){
-		std::getline (std::cin,to_send);
+
+		std::getline(std::cin,to_send);
+
 
 		Packet newpacket;
 		newpacket<<to_send;
