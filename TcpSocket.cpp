@@ -44,11 +44,13 @@ Socket::Status TcpSocket::sendPacket(const Packet&packet){
 	memcpy(&data[0],&size,sizeof(size));
 	memcpy(&data[sizeof(size)],packet.getData(),size);
 
-	std::uint32_t total_sent=0;
+	int total_sent=0;
 	while(total_sent<total_size){
-		std::uint32_t chunk_size=send(getHandle(),&data[total_sent],total_size-total_sent,0);
+		int chunk_size=send(getHandle(),&data[total_sent],total_size-total_sent,MSG_NOSIGNAL);
 
 		if(chunk_size<0){
+			if(errno==32)
+				return Socket::Status::Disconnected;
 			return Socket::Status::Error;
 		}
 

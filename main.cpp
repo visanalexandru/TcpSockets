@@ -14,7 +14,11 @@ ifstream in("input");
 
 
 
-void server(TcpListener&server){
+void server(){
+	TcpListener server;
+	server.listenToPort(8080);
+
+
 	Selector selector;
 	selector.add(server);
 	vector<TcpSocket*> clients;
@@ -27,7 +31,7 @@ void server(TcpListener&server){
 				server.acceptNewClient(newsock);
 				selector.add(*newsock);
 				clients.push_back(newsock);
-				std::cout<<"new client connected "<<newsock->getHandle()<<std::endl;
+				std::cout<<"new client connected "<<std::endl;
 			}
 			else{
 				for(int i=0;i<clients.size();i++){
@@ -56,43 +60,44 @@ void server(TcpListener&server){
 
 }
 
-void client(TcpSocket&sock){
+void client(){
 	string to_send;
-	std::cout<<"started client to"<<sock.getAdress().address<<" "<<sock.getAdress().port<<std::endl;
+	TcpSocket socket;
+	Socket::Status status=socket.connectToAdress("192.168.0.189",8080);
+
+	if(status!=Socket::Status::Done){
+		std::cout<<"cannot connect to server"<<std::endl;
+		return;
+	}
+
+
+	std::cout<<"started client to"<<socket.getAdress().address<<" "<<socket.getAdress().port<<std::endl;
 
 	while(1){
-		cin>>to_send;
+		std::getline (std::cin,to_send);
+
 		Packet newpacket;
 		newpacket<<to_send;
-		sock.sendPacket(newpacket);
+
+		Socket::Status status=socket.sendPacket(newpacket);
+		if(status==Socket::Disconnected){
+			std::cout<<"server disconnected"<<std::endl;
+			break;
+		}
 	}
 }
 
 
 int main(int argc,char*argv[]){
 
-	Packet packet;
-	Selector selector;
-
 
 
 
 	if(argc==2){
-
-		TcpSocket socket;
-		socket.connectToAdress("192.168.0.189",8080);
-		client(socket);
+		client();
 	}
 	else{
-
-
-
-		TcpListener listener;
-		listener.listenToPort(8080);
-
-
-		server(listener);
-
+		server();
 	}
 
 	return 0;
