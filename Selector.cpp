@@ -4,7 +4,6 @@
 
 
 void Selector::add(const Socket&sock){
-	FD_SET(sock.getHandle(), &socket_set); 
 	sockets.insert(&sock);
 }
 
@@ -13,19 +12,37 @@ void Selector::remove(const Socket&sock){
 
 	auto iter=sockets.find(&sock);
 
+
 	if(iter!=sockets.end())//socket is in set
 	{
 		sockets.erase(iter);
-		FD_CLR(sock.getHandle(), &socket_set);
 	}
 }
 
 void Selector::clear(){
+	sockets.clear();
+}
+
+void Selector::clear_set(){
 	FD_ZERO(&socket_set);  
 }
 
 
+void Selector::init_set(){
+	clear_set();
+
+	for(const Socket* a:sockets){
+		add_to_set(*a);
+	}
+}
+
+void Selector::add_to_set(const Socket&socket){
+	FD_SET(socket.getHandle(),&socket_set);
+}
+
+
 bool Selector::wait(){//TODO add timeout
+	init_set();
 	if(sockets.size()){
 		int max_d=(*(sockets.rbegin()))->getHandle();
 

@@ -14,6 +14,61 @@ ifstream in("input");
 
 
 
+void server(TcpListener&server){
+	Selector selector;
+	selector.add(server);
+	vector<TcpSocket*> clients;
+
+
+	while(1){
+		if(selector.wait()){
+			if(selector.isReady(server)){
+				TcpSocket*newsock=new TcpSocket;
+				server.acceptNewClient(newsock);
+				selector.add(*newsock);
+				clients.push_back(newsock);
+				std::cout<<"new client connected "<<newsock->getHandle()<<std::endl;
+			}
+			else{
+				for(int i=0;i<clients.size();i++){
+					TcpSocket*a=clients[i];
+
+
+					if(selector.isReady(*a)){
+						Packet received;
+						Socket::Status status=a->receivePacket(received);
+						if(status==Socket::Status::Done){
+							string message;
+							received>>message;
+							std::cout<<a->getAdress().address<<":"<<message<<std::endl;
+						}
+						else if(status==Socket::Status::Disconnected){
+							selector.remove(*a);
+							clients.erase(clients.begin()+i);
+							std::cout<<a->getAdress().address<<" disconnected"<<std::endl;
+						}
+					}						
+				}
+			}
+
+		}
+	}
+
+}
+
+void client(TcpSocket&sock){
+	string to_send;
+	std::cout<<"started client to"<<sock.getAdress().address<<" "<<sock.getAdress().port<<std::endl;
+
+	while(1){
+		cin>>to_send;
+		Packet newpacket;
+		newpacket<<to_send;
+		sock.sendPacket(newpacket);
+	}
+}
+
+
 int main(int argc,char*argv[]){
 
 	Packet packet;
@@ -26,16 +81,7 @@ int main(int argc,char*argv[]){
 
 		TcpSocket socket;
 		socket.connectToAdress("192.168.0.189",8080);
-
-
-		std::cout<<"connected to"<<socket.getAdress().address<<std::endl;
-
-		socket.receivePacket(packet);
-		string message;
-		int ans;
-		packet>>message>>ans;
-		cout<<message<<" "<<ans;
-
+		client(socket);
 	}
 	else{
 
@@ -45,17 +91,7 @@ int main(int argc,char*argv[]){
 		listener.listenToPort(8080);
 
 
-		TcpSocket client;
-
-
-
-		listener.acceptNewClient(&client);
-		int a;
-		cin>>a;
-		//std::string content((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-		packet<<"hello world!!!!The answer to life is"<<42;
-		client.sendPacket(packet);	
-
+		server(listener);
 
 	}
 

@@ -16,6 +16,9 @@ class Selector{
 				return a->getHandle()<b->getHandle();
 			}
 		};
+		void init_set();
+		void clear_set();
+		void add_to_set(const Socket&socket);
 		std::set<const Socket*,comparator> sockets;
 	public:
 		void add(const Socket&sock);
