@@ -20,7 +20,7 @@ Socket::Status TcpSocket::connectToAdress(const std::string&address,unsigned por
 
 	if (connect(getHandle(), (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
 	{
-		
+
 		return Socket::Status::Disconnected;
 	}
 
@@ -28,9 +28,22 @@ Socket::Status TcpSocket::connectToAdress(const std::string&address,unsigned por
 }
 
 
+Socket::Status TcpSocket::sendData(const void*data,int size,int&sent){
+	sent=send(getHandle(),data,size,MSG_NOSIGNAL);
+
+	if(sent<0){
+		sent=0;
+		if(errno==32)
+			return Socket::Status::Disconnected;
+		return Socket::Status::Error;
+	}
+
+	return Socket::Status::Done;
+}
+
 Socket::Status TcpSocket::sendPacket(const Packet&packet){
 
-	
+
 
 	std::uint32_t size=packet.getNumBytes();
 	std::uint32_t total_size=size+sizeof(size);
@@ -46,34 +59,46 @@ Socket::Status TcpSocket::sendPacket(const Packet&packet){
 
 	int total_sent=0;
 	while(total_sent<total_size){
-		int chunk_size=send(getHandle(),&data[total_sent],total_size-total_sent,MSG_NOSIGNAL);
 
-		if(chunk_size<0){
-			if(errno==32)
-				return Socket::Status::Disconnected;
-			return Socket::Status::Error;
-		}
+		int chunk_size;
+		Socket::Status status=sendData(&data[total_sent],total_size-total_sent,chunk_size);
 
+		if(status!=Socket::Status::Done)
+			return status;
 		total_sent+=chunk_size;
 	}
-	
-
 
 	return Socket::Status::Done;
 
 }
 
+
+Socket::Status TcpSocket::receiveData(void*receive,int size,int&received){
+	received=recv(getHandle(),receive,size,0);
+
+	if(received<=0){
+		if(received==0)
+			return Socket::Status::Disconnected;
+		received=0;
+		return Socket::Status::Error;
+	}
+	return Socket::Status::Done;
+}
+
+
 Socket::Status TcpSocket::receivePacket(Packet&packet){
 
 
 	std::uint32_t packet_size;//this is the pending packet size
-	int size=recv(getHandle(),&packet_size,sizeof(uint32_t),0);//TODO fix this (uint32_t may be received in multiple calls
-	
-	if(size<=0){
-		if(size==0)
-			return Socket::Status::Disconnected;
-		return Socket::Status::Error;
-	}
+	int received;
+
+
+	Socket::Status status=receiveData(&packet_size,sizeof(uint32_t),received);
+
+	if(status!=Socket::Status::Done)
+		return status;
+
+
 
 	std::vector<char> buffer;
 	buffer.resize(packet_size);
@@ -81,14 +106,12 @@ Socket::Status TcpSocket::receivePacket(Packet&packet){
 	int total_received=0;
 
 	while(total_received<packet_size){
-		int received=recv(getHandle(),&buffer[total_received],packet_size-total_received,0);
-		if(received<=0){
-			
-			if(received==0){
-				return Socket::Status::Disconnected;
-			}
-			return Socket::Status::Error;
-		}
+		int received;
+		status=receiveData(&buffer[total_received],packet_size-total_received,received);
+		
+		if(status!=Socket::Status::Done)
+			return status;
+
 		total_received+=received;
 	}
 
