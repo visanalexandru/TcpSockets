@@ -108,33 +108,39 @@ Packet& Packet::operator >>(std::uint32_t &destination){
 }
 
 
-
-
 Packet& Packet::operator <<(std::int64_t toAdd){
-	append(&toAdd,sizeof(toAdd));
+	std::int64_t network_order=htobe64(toAdd);
+	append(&network_order,sizeof(network_order));
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::int64_t &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	std::int64_t network_order;
+
+	memcpy(&network_order,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
+
+	destination=be64toh(network_order);
 	return *this;
 }
 
 Packet& Packet::operator <<(std::uint64_t toAdd){
-	append(&toAdd,sizeof(toAdd));
+	std::uint64_t network_order=htobe64(toAdd);
+	append(&network_order,sizeof(network_order));
 	return *this;
 }
 
 
 Packet& Packet::operator >>(std::uint64_t &destination){
-	memcpy(&destination,&buffer[readPosition],sizeof(destination));
+	std::uint64_t network_order;
+
+	memcpy(&network_order,&buffer[readPosition],sizeof(destination));
 	readPosition+=sizeof(destination);
+
+	destination=be64toh(network_order);
 	return *this;
 }
-
-
 
 
 Packet& Packet::operator <<(const std::string&toAdd){

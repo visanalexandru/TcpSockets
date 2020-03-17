@@ -61,7 +61,7 @@ void server(){
 }
 
 void client(){
-	std::string to_send;
+	string to_send;
 	TcpSocket socket;
 	Socket::Status status=socket.connectToAdress("192.168.0.189",8080);
 
@@ -76,8 +76,6 @@ void client(){
 	while(1){
 
 		std::getline(std::cin,to_send);
-
-
 		Packet newpacket;
 		newpacket<<to_send;
 
@@ -91,7 +89,6 @@ void client(){
 
 
 int main(int argc,char*argv[]){
-
 
 
 

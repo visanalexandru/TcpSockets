@@ -6,6 +6,7 @@
 #include<string>
 #include<iostream>
 #include <netinet/in.h>
+#include <endian.h>
 
 
 class Packet{
@@ -40,9 +41,6 @@ class Packet{
 
 		Packet&operator <<(std::uint64_t toAdd);
 		Packet&operator >>(std::uint64_t &destination);	
-
-		Packet&operator <<(long long  toAdd);
-		Packet&operator >>(long long &destination);	
 
 		Packet&operator <<(const std::string &toAdd);
 		Packet&operator >>(std::string &destination);
