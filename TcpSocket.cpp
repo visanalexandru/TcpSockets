@@ -41,6 +41,22 @@ Socket::Status TcpSocket::sendData(const void*data,int size,int&sent){
 	return Socket::Status::Done;
 }
 
+Socket::Status TcpSocket::sendAll(const char*data,int size){
+	int total_sent=0,chunk_size;	
+	
+	while(total_sent<size){
+
+		Socket::Status status=sendData(&data[total_sent],size-total_sent,chunk_size);
+
+		if(status!=Socket::Status::Done)
+			return status;
+		total_sent+=chunk_size;
+	}
+	return Socket::Status::Done;
+	
+
+}
+
 Socket::Status TcpSocket::sendPacket(const Packet&packet){
 
 
@@ -57,18 +73,9 @@ Socket::Status TcpSocket::sendPacket(const Packet&packet){
 	memcpy(&data[0],&size,sizeof(size));
 	memcpy(&data[sizeof(size)],packet.getData(),size);
 
-	int total_sent=0;
-	while(total_sent<total_size){
+	Socket::Status status=sendAll(&data[0],total_size);
 
-		int chunk_size;
-		Socket::Status status=sendData(&data[total_sent],total_size-total_sent,chunk_size);
-
-		if(status!=Socket::Status::Done)
-			return status;
-		total_sent+=chunk_size;
-	}
-
-	return Socket::Status::Done;
+	return status;
 
 }
 
@@ -85,35 +92,44 @@ Socket::Status TcpSocket::receiveData(void*receive,int size,int&received){
 	return Socket::Status::Done;
 }
 
+Socket::Status TcpSocket::receiveAll(char*data,int size){
+	int total_received=0,chunk_size;	
+	
+	while(total_received<size){
+
+		Socket::Status status=receiveData(&data[total_received],size-total_received,chunk_size);
+
+		if(status!=Socket::Status::Done)
+			return status;
+		total_received+=chunk_size;
+	}
+	return Socket::Status::Done;
+
+}
+
+
 
 Socket::Status TcpSocket::receivePacket(Packet&packet){
 
-
+	std::vector<char> buffer;
 	std::uint32_t packet_size;//this is the pending packet size
-	int received;
+	buffer.resize(sizeof(packet_size));
 
-
-	Socket::Status status=receiveData(&packet_size,sizeof(uint32_t),received);
+	Socket::Status status=receiveAll(&buffer[0],sizeof(packet_size));
 
 	if(status!=Socket::Status::Done)
 		return status;
+	
+	memcpy(&packet_size,&buffer[0],sizeof(packet_size));
 
+	buffer.clear();
 
-
-	std::vector<char> buffer;
 	buffer.resize(packet_size);
 
-	int total_received=0;
+	status=receiveAll(&buffer[0],packet_size);
 
-	while(total_received<packet_size){
-		int received;
-		status=receiveData(&buffer[total_received],packet_size-total_received,received);
-		
-		if(status!=Socket::Status::Done)
-			return status;
-
-		total_received+=received;
-	}
+	if(status!=Socket::Status::Done)
+		return status;
 
 	packet.buffer=buffer;
 	return Socket::Status::Done;
