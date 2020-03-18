@@ -52,7 +52,14 @@ void server(){
 						if(status==Socket::Status::Done){
 							string message;	
 							received>>message;
+							string to_send=a->getAdress().address+": "+message;
+							Packet packet_to_send;
+							packet_to_send<<to_send;
+
 							std::cout<<a->getAdress().address<<":"<<message<<std::endl;
+							for(int i=0;i<clients.size();i++){
+								clients[i]->sendPacket(packet_to_send);
+							}
 						}
 						else if(status==Socket::Status::Disconnected){
 							selector.remove(*a);
