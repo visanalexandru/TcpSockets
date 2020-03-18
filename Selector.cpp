@@ -41,15 +41,20 @@ void Selector::add_to_set(const Socket&socket){
 }
 
 
-bool Selector::wait(){//TODO add timeout
+bool Selector::wait(int microseconds){
+	
+	struct timeval tv = {microseconds/1000000, microseconds%1000000};
+
+
 	init_set();
 	if(sockets.size()){
 		int max_d=(*(sockets.rbegin()))->getHandle();
+	
+		struct timeval*x=(microseconds>0)? &tv :NULL;
 
+		int activity = select( max_d + 1 , &socket_set , NULL , NULL ,x);
 
-		int activity = select( max_d + 1 , &socket_set , NULL , NULL , NULL);
 		if(activity <= 0){
-			if(activity<0)
 			return false;
 		}
 		return true;

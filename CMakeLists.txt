@@ -9,4 +9,4 @@ project(TcpLib)
 add_executable(TcpLib  main.cpp Packet.cpp TcpListener.cpp TcpSocket.cpp Socket.cpp Selector.cpp)
 
 target_compile_options(TcpLib PRIVATE -fexceptions -g)
-
+target_link_libraries(TcpLib pthread)

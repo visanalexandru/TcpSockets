@@ -24,7 +24,7 @@ class Selector{
 		void add(const Socket&sock);
 		void remove(const Socket&sock);
 		void clear();
-		bool wait();//waits until sock is ready
+		bool wait(int microseconds=0);//waits until sock is ready
 		bool isReady(const Socket&sock);
 
 };
