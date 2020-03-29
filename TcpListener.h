@@ -6,9 +6,6 @@
 
 class TcpListener:public Socket{
 
-
-	private:
-		void setSocketOptions(unsigned port);
 	public:
 		TcpListener();
 		Socket::Status listenToPort(unsigned port);

@@ -121,7 +121,7 @@ void client(){
 	while(1){
 
 		std::getline(std::cin,to_send);
-		if(to_send=="/STOP")
+		if(to_send=="#")
 			break;
 
 		Packet newpacket;
