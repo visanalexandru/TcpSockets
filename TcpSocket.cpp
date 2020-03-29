@@ -28,7 +28,7 @@ Socket::Status TcpSocket::connectToAdress(const std::string&address,unsigned por
 }
 
 
-Socket::Status TcpSocket::sendData(const void*data,int size,int&sent){
+Socket::Status TcpSocket::sendData(const char*data,int size,int&sent){
 	sent=send(getHandle(),data,size,MSG_NOSIGNAL);
 
 	if(sent<0){
@@ -80,7 +80,7 @@ Socket::Status TcpSocket::sendPacket(const Packet&packet){
 }
 
 
-Socket::Status TcpSocket::receiveData(void*receive,int size,int&received){
+Socket::Status TcpSocket::receiveData(char*receive,int size,int&received){
 	received=recv(getHandle(),receive,size,0);
 
 	if(received<=0){

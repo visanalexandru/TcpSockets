@@ -45,7 +45,7 @@ class Packet{
 		Packet&operator <<(const std::string &toAdd);
 		Packet&operator >>(std::string &destination);
 
-		const void* getData() const;
+		const char* getData() const;
 		std::uint32_t getNumBytes() const;
 
 		friend class TcpSocket;

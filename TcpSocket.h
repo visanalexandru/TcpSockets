@@ -13,8 +13,8 @@ class TcpSocket:public Socket{
 		Socket::Status sendPacket(const Packet&packet);
 		Socket::Address getAdress() const;
 
-		Socket::Status sendData(const void*data,int size,int&sent);
-		Socket::Status receiveData(void*receive,int size,int&received);
+		Socket::Status sendData(const char*data,int size,int&sent);
+		Socket::Status receiveData(char*receive,int size,int&received);
 
 		Socket::Status receivePacket(Packet&packet);
 

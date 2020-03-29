@@ -169,7 +169,7 @@ Packet& Packet::operator >>(std::string&destination){
 	return *this;
 }
 
-const void* Packet::getData() const {
+const char* Packet::getData() const {
 	return &buffer[0];
 }
 
